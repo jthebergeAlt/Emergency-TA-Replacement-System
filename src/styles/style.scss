@@ -1,0 +1,50 @@
+$SCUred: #b30738;
+$SCUdarkred: #97052e;
+
+body {
+  background-color: $SCUred;
+}
+form {
+    background-color: $SCUred;
+    min-height: 100vh;
+}
+
+button {
+  background-color: $SCUred;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background-color: $SCUdarkred;
+  }
+}
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  .card {
+    width: 100%;
+    .card-block {
+      padding: 15px 0;
+    }
+  }
+}
+
+form.login {
+  .card {
+    max-width: 300px;
+  }
+}
+
+* {
+  text-align: center;
+}
+
+input {
+  margin-bottom: 15px;
+}
+
+label {
+  cursor: pointer;
+  font-size: 20px;
+}

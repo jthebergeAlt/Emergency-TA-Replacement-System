@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>TA Replacements | Sign In</title>
+
+    <!-- ==========================
+     Meta Tags
+    =========================== -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ==========================
+     CSS
+    =========================== -->
+    <link href="../../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="../styles/style.css" rel="stylesheet" type="text/css">
+
+    <!-- ==========================
+    JS
+    =========================== -->
+    <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../../node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script async src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script async src="../../node_modules/axios/dist/axios.min.js"></script>
+
+  </head>
+  <body>
+
+    <form action='' onsubmit='handleSubmit()' method='post' class='login'>
+      <script>
+      function handleSubmit() {
+        console.log('submitted');
+      }
+      </script>
+      <div class="card">
+        <h4 class="card-header">Sign In</h4>
+        <div class="card-block">
+          <label><div>Email</div>
+            <input type="email" name="email">
+          </label>
+          <label><div>Password</div>
+         <input type="password" name="password">
+          </label>
+         <button class='btn' type='submit'>Sign In</button>
+        </div>
+      </div>
+    </form>
+  </body>
+</html>
