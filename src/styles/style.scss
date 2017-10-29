@@ -2,11 +2,12 @@ $SCUred: #b30738;
 $SCUdarkred: #97052e;
 
 body {
+  min-height: 100vh;
   background-color: $SCUred;
-}
-form {
-    background-color: $SCUred;
-    min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 button {
@@ -18,10 +19,11 @@ button {
   }
 }
 form {
+  background-color: $SCUred;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   .card {
     width: 100%;
     .card-block {

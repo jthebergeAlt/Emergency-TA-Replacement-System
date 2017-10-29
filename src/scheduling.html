@@ -13,6 +13,7 @@
      CSS
     =========================== -->
     <link href="../../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="../../node_modules/flatpickr/dist/flatpickr.min.css" rel="stylesheet" type="text/css">
     <link href="../styles/style.css" rel="stylesheet" type="text/css">
 
     <!-- ==========================
@@ -21,11 +22,11 @@
     <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
     <script src="../../node_modules/popper.js/dist/umd/popper.min.js"></script>
     <script async src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script async src="../../node_modules/axios/dist/axios.min.js"></script>
+    <script src="../../node_modules/flatpickr/dist/flatpickr.min.js"></script>
 
   </head>
-  <body>
-    <form class='container'>
+  <body class='container'>
+    <form>
       <div class="card">
         <h4 class="card-header">Availability</h4>
         <div class="card-block">
@@ -33,19 +34,19 @@
           <br>
           <div>
             <label>
-              Mondays 9:15AM-12:00PM
+              Mondays 9:15AM-12:00PM (Section #123)
               <input type='checkbox' name='monday'>
             </label>
           </div>
           <div>
             <label>
-              Tuesdays 9:15AM-12:00PM
+              Tuesdays 9:15AM-12:00PM (Section #234)
               <input type='checkbox' name='tuesday'>
             </label>
           </div>
           <div>
             <label>
-              Thursdays 2:15PM-5:00PM
+              Thursdays 2:15PM-5:00PM (Section #345)
               <input type='checkbox' name='thursday'>
             </label>
           </div>
@@ -54,19 +55,19 @@
           <br>
           <div>
             <label>
-              Mondays 9:15AM-12:00PM
+              Mondays 9:15AM-12:00PM (Section #456)
               <input type='checkbox' name='monday'>
             </label>
           </div>
           <div>
             <label>
-              Tuesdays 9:15AM-12:00PM
+              Tuesdays 9:15AM-12:00PM (Section #567)
               <input type='checkbox' name='tuesday'>
             </label>
           </div>
           <div>
             <label>
-              Thursdays 2:15PM-5:00PM
+              Thursdays 2:15PM-5:00PM (Section #678)
               <input type='checkbox' name='thursday'>
             </label>
           </div>
@@ -75,5 +76,21 @@
         </div>
       </div>
     </form>
+    <hr>
+    <form>
+      <div class="card">
+        <h4 class="card-header">Notify of Absence</h4>
+        <div class="card-block">
+          <label><div>Date(s) absent for COEN 122 section #123 </div>
+            <input id="date" type="date" name="absence">
+          </label>
+          <hr>
+         <button class='btn' type='submit'>Notify</button>
+        </div>
+      </div>
+    </form>
+    <script>
+    $("#date").flatpickr({mode: "multiple", minDate: "today"});
+    </script>
   </body>
 </html>
