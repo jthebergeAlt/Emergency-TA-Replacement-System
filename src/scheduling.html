@@ -26,7 +26,7 @@
 
   </head>
   <body class='container'>
-    <form>
+    <form id='schedule'>
       <div class="card">
         <h4 class="card-header">Availability</h4>
         <div class="card-block">
@@ -91,6 +91,10 @@
     </form>
     <script>
     $("#date").flatpickr({mode: "multiple", minDate: "today"});
+    $("#schedule").submit(function(test) {
+      console.log("TESTING:", $(this).serialize());
+      return false;
+    });
     </script>
   </body>
 </html>

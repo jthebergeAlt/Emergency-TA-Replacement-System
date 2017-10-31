@@ -12,7 +12,7 @@
     <!-- ==========================
      CSS
     =========================== -->
-    <link href="../../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">  
+    <link href="../../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="../styles/style.css" rel="stylesheet" type="text/css">
 
     <!-- ==========================
@@ -24,7 +24,7 @@
     <script async src="../../node_modules/flatpickr/dist/flatpickr.min.js"></script>
   </head>
   <body>
-    <form action='/' method='post' class='login'>
+    <form id='login'>
       <div class="card">
         <h4 class="card-header">Sign In</h4>
         <div class="card-block">
@@ -38,5 +38,25 @@
         </div>
       </div>
     </form>
+    <script>
+    $("#login").submit(function() {
+      var data = $(this).serializeArray();
+      var returnedObj = {};
+      $.map(data, function(obj) {
+       var entries = Object.entries(obj);
+       returnedObj[entries[0][1]] = entries[1][1];
+     });
+      $.ajax({
+        url: '/auth',
+        type: "POST",
+        data: returnedObj,
+        success: function(response) {
+          if (response) console.log(response);
+          else console.log(response);
+        }
+      });
+      return false;
+    });
+    </script>
   </body>
 </html>
