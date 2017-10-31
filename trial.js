@@ -39,6 +39,7 @@ function createTable() {
 		//Table that holds the listing of all the times the TA is available
 		db.run("CREATE TABLE IF NOT EXISTS Available ( \
     				ta_id   INTEGER NOT NULL, \
+    				section_name 	TEXT NOT NULL, \
     				start_t TIME NOT NULL, \
     				end_t   TIME NOT NULL, \
     				FOREIGN KEY (ta_id) \
@@ -79,64 +80,168 @@ function createTable() {
     				name    TEXT NOT NULL UNIQUE NOT NULL \
 		);");
 
+
+		//Used to check for valid course names
+		db.run("CREATE TABLE IF NOT EXISTS CoursesAvailable ( \
+    				course_name    TEXT NOT NULL UNIQUE NOT NULL, \
+    				section_id		INTEGER PRIMARY KEY, \
+    				ta_id			INTEGER NOT NULL, \
+    				ta_f_name		TEXT NOT NULL ,\
+    				ta_l_name		TEXT NOT NULL\
+		);");
+
+		//Used to record the absences of TAs
+		db.run("CREATE TABLE IF NOT EXISTS TAAbsence ( \
+    				ta_id    		INTEGER NOT NULL, \
+    				ta_name			TEXT NOT NULL, \
+    				course_name		TEXT NOT NULL, \
+    				section_id		INTEGER PRIMARY KEY \
+		);");
+
+
+
+	});
+}
+
+
+/*******************************************************************************/
+
+//Verify the login information sent 
+function verifyLogin(email, password){
+	var check = false;
+
+	db.serialize(function(){
+		//check = true;
+		db.each("SELECT email email, password password FROM Login", function(err, row) {
+			if(row.email == email && row.password == password){
+				check = true;
+				console.log(check);
+				console.log("found user");
+				return check;
+			}
+		});
+
+	});
+
+}
+
+/*******************************************************************************/
+
+function insertNewTA(fname, lname, id, email, phone) {
+	db.serialize(function() {
+		var ta = db.prepare("INSERT OR REPLACE INTO TA (first_name,last_name, id, email, phone) VALUES (?,?,?,?,?)");
+		ta.run(fname, lname, id, email, phone);
+		ta.finalize();
+
 	});
 }
 
 /*******************************************************************************/
 
-function insertIntoTable() {
+function insertNewAvailability(id, start, end) {
 	db.serialize(function() {
-		
-		var ta = db.prepare("INSERT OR REPLACE INTO TA (first_name,last_name, id, email, phone) VALUES (?,?,?,?,?)");
 		var avail = db.prepare("INSERT INTO Available (ta_id, start_t, end_t) VALUES (?, ? , ?)");
-		var ta_class = db.prepare("INSERT INTO TAClasses (ta_id, course_name) VALUES(?,?)");
-		var courses = db.prepare("INSERT OR REPLACE INTO Courses (name) VALUES (?)");
-		
-		var login = db.prepare("INSERT OR IGNORE INTO Login (email, password) VALUES (?,?)");
-
-		login.run("kwwakaba@gmail.com", "1234");
-		login.run("kwakaba@scu.edu", "4321");
-		login.run("kwwakaba@yahoo.com", "123");
-
-		/*
-		ta.run("Bob", "Jones", 0 ,"bjones@scu.edu", "111-111-1111");
-		ta.run("Bill", "Ding", 1 , "bding@scu.edu", "222-222-2222");
-		
-		avail.run(0, "9:15", "12:00");
-		avail.run(0, "17:00", "20:30");
-		avail.run(1, "14:15", "17:00");
-		avail.run(1, "17:15", "20:00");
-
-
-		ta_class.run(0, "COEN 100");
-		ta_class.run(1, "COEN 100");
-		ta_class.run(1, "COEN 200");
-
-
-		courses.run("COEN 100");
-		courses.run("COEN 200");
-		*/
-		ta.finalize();
+		avail.run(id, start, end);
 		avail.finalize();
-		ta_class.finalize();
+
+	});
+}
+
+/*******************************************************************************/
+
+function insertNewCourse(course) {
+	db.serialize(function() {
+		var courses = db.prepare("INSERT OR REPLACE INTO Courses (name) VALUES (?)");
+		courses.run(course);
 		courses.finalize();
+
+	});
+}
+
+/*******************************************************************************/
+
+function insertNewTAClass(id, course) {
+	db.serialize(function() {
+		var ta_class = db.prepare("INSERT INTO TAClasses (ta_id, course_name) VALUES(?,?)");
+		ta_class.run(id, course);
+		ta_class.finalize();
+
+	});
+}
+
+/*******************************************************************************/
+
+function insertNewSectionTime(id, name, start, end) {
+	db.serialize(function() {
+		var section = db.prepare("INSERT OR REPLACE INTO SectionTimes (id, name, start_t, end_t) VALUES (?,?,?,?)");
+		
+		section.run(id, name, start, end);
+		section.finalize();
+
+	});
+}
+
+/*******************************************************************************/
+
+function insertLoginCredential(email, password) {
+	db.serialize(function() {
+		var login = db.prepare("INSERT OR IGNORE INTO Login (email, password) VALUES (?,?)");
+		
+		login.run(email, password);
 		login.finalize();
 
-		
-		/*
-		db.each("SELECT id id, first_name name, email email FROM TA", function(err, row) {
-			console.log(row.id + ": " + row.name + ": " + row.email);
-		});
-		*/
+	});
+}
 
+
+/*******************************************************************************/
+
+//Inserts the TAs that are available for certain sections
+function insertAvailableCourses(course_name, section_id, ta_id, ta_f_name, ta_l_name) {
+	db.serialize(function() {
+		var c_avail = db.prepare("INSERT OR IGNORE INTO CoursesAvailable (course_name, section_id, ta_id, ta_f_name, ta_l_name) VALUES (?,?,?,?,?)");
+		
+		c_avail.run(course_name, section_id, ta_id, ta_f_name, ta_l_name);
+		c_avail.finalize();
 
 	});
-
 }
 
 /*******************************************************************************/
 
-function deleteFromTable() {
+//Retrieves all TAs that are available for a certain lab section
+function retrieveAvailableTA(section_id) {
+	db.serialize(function() {
+		var available = [];
+		db.each("SELECT ta_f_name fname, ta_l_name lname FROM CoursesAvailable WHERE section_id = ?" , section_id, function(err, row){
+			var name = row.fname + " " + row.lname;
+			available.push(name);
+		}); 
+
+		var json = '{ "sections" : [ ' + available.join() + '] }' ;
+		var obj = JSON.parse(json);
+		return obj;
+	});
+}
+
+/*******************************************************************************/
+
+//Inserts a TA into the table that has all the recorded absences
+function addTAAbsence(ta_id, ta_name, course_name, section_id) {
+	db.serialize(function() {
+
+		db.serialize(function() {
+		var absent = db.prepare("INSERT OR IGNORE INTO TAAbsence (ta_id, ta_name, course_name, section_id) VALUES (?,?,?,?)");
+		
+		c_avail.run(ta_id, ta_name, course_name, section_id);
+		c_avail.finalize();
+		});
+
+	});
+}
+/*******************************************************************************/
+
+function deleteFromTable() { 
 	db.serialize(function() {
 		var stmt = db.prepare("DELETE FROM TA WHERE rowid=?");
 		stmt.run(3);
@@ -149,37 +254,18 @@ function deleteFromTable() {
 	});
 }
 
-/*******************************************************************************/
 
-function verifyLogin(email, password){
-	var check = false;
-
-	db.serialize(function(){
-		//check = true;
-		db.each("SELECT email email, password password FROM Login", function(err, row) {
-			if(row.email == email && row.password == password){
-				check = true;
-				return check;
-				console.log(check);
-				console.log("found user");
-			} 
-		});
-
-	});
-
-}
 
 
 /*******************************************************************************/
-
 
 
 openDB(sqlite3);
 
 createTable();
-insertIntoTable();
-verifyLogin("kwwakaba@gmail.com", 1234);
-//verifyLogin("kwakaba@scu.edu", 4321);
+//insertNewTA("Ken", "Wakaba", 17, "Kwan@yahoo.com", "123-456-7890");
+//insertNewAvailability(19, "5:00", "7:00")
+//verifyLogin("kwakaba@scu.edu", 431);
 
 //deleteFromTable();
 
