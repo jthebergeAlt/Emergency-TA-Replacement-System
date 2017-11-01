@@ -10,7 +10,7 @@ openDB();
 
 app.use(compression());
 app.use(express.static(__dirname + '/src'));
-app.use(express.static(__dirname));
+app.use(express.static(__dirname + '/node_modules'));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -27,9 +27,13 @@ app.post('/auth', function (req, res) {
     if(verified)
       res.sendFile(path.resolve(__dirname, 'src/scheduling.html'));
     else
-      res.status(200).send(false);
+      res.sendFile(path.resolve(__dirname, 'src/loginFailed.html'));
   })
 
+});
+
+app.post('/create', function (req, res) {
+  res.json({test: 'testing'});
 });
 
 app.post('/update', function (req, res) {
@@ -157,7 +161,7 @@ function verifyLogin(email, password, callback) {
   var verified = false;
 	db.serialize(function(){
 		db.each("SELECT email email, password password FROM Login", function(err, row) {
-			if(row.email == email && row.password == password)
+      if(row.email == email && row.password == password)
         return callback(true);
 		});
 	});

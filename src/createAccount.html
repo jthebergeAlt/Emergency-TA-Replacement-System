@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>TA Replacements | Sign In</title>
+    <title>TA Replacements | Create Account</title>
 
     <!-- ==========================
      Meta Tags
@@ -21,27 +21,37 @@
     <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
     <script async src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script async src="../node_modules/flatpickr/dist/flatpickr.min.js"></script>
 
   </head>
   <body>
-    <form id='login'>
+    <form method='post' action='/create' id='createAccount'>
       <div class="card">
-        <h4 class="card-header">Sign In</h4>
+        <h4 class="card-header">Create Account</h4>
         <div class="card-block">
+          <label><div>First Name</div>
+            <input required type="text" name="first_name">
+          </label>
+          <label><div>Last Name</div>
+            <input required type="text" name="last_namel">
+          </label>
           <label><div>Email</div>
             <input required type="email" name="email">
+          </label>
+          <label><div>Phone Number</div>
+            <input required type="tel" name="phone">
           </label>
           <label><div>Password</div>
          <input required type="password" name="password">
           </label>
-         <button class='btn' type='submit'>Sign In</button>
+         <button class='btn' type='submit'>Create account</button>
         </div>
         <hr style="margin: 0">
-        <a style="margin: 5px" href='/createAccount.html'>Create account</a>
+        <a style="margin: 5px" href='/login.html'>Sign in to existing account</a>
       </div>
     </form>
-    <script>
-    $("#login").submit(function(e) {
+    <!-- <script>
+    $("#createAccount").submit(function(e) {
       var data = $(this).serializeArray();
       var sendingObj = {};
       $.map(data, function(obj) {
@@ -49,7 +59,7 @@
         sendingObj[entries[0][1]] = entries[1][1];
       });
       $.ajax({
-        url: '/auth',
+        url: '/create',
         type: "POST",
         data: sendingObj,
         success: function(response) {
@@ -59,6 +69,6 @@
       });
       return false;
     });
-    </script>
+    </script> -->
   </body>
 </html>

@@ -12,17 +12,16 @@
     <!-- ==========================
      CSS
     =========================== -->
-    <link href="../../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-    <link href="../../node_modules/flatpickr/dist/flatpickr.min.css" rel="stylesheet" type="text/css">
-    <link href="../styles/style.css" rel="stylesheet" type="text/css">
+    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="./styles/style.css" rel="stylesheet" type="text/css">
 
     <!-- ==========================
     JS
     =========================== -->
-    <script src="../../node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="../../node_modules/popper.js/dist/umd/popper.min.js"></script>
-    <script async src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="../../node_modules/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script async src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script async src="../node_modules/flatpickr/dist/flatpickr.min.js"></script>
 
   </head>
   <body class='container'>
@@ -90,10 +89,12 @@
       </div>
     </form>
     <script>
-    $("#date").flatpickr({mode: "multiple", minDate: "today"});
-    $("#schedule").submit(function(test) {
-      console.log("TESTING:", $(this).serialize());
-      return false;
+    $( document ).ready(function() {
+      $("#date").flatpickr({mode: "multiple", minDate: "today"});
+      $("#schedule").submit(function(test) {
+        console.log("TESTING:", $(this).serialize());
+        return false;
+      });
     });
     </script>
   </body>
