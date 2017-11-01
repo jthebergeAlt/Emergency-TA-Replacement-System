@@ -76,7 +76,6 @@ function createTable() {
 		db.run("CREATE TABLE IF NOT EXISTS TA (\
 				    first_name   TEXT NOT NULL,\
 				    last_name   TEXT NOT NULL,\
-				    id      INTEGER PRIMARY KEY,\
 				    email   TEXT NOT NULL,\
 				    phone   TEXT NOT NULL\
 		);");
@@ -84,71 +83,27 @@ function createTable() {
 
 		//Table that holds the listing of all the times the TA is available
 		db.run("CREATE TABLE IF NOT EXISTS Available ( \
-    				ta_id   INTEGER NOT NULL, \
-    				section_name 	TEXT NOT NULL, \
-    				start_t TIME NOT NULL, \
-    				end_t   TIME NOT NULL, \
-    				FOREIGN KEY (ta_id) \
-        				REFERENCES TA(id) \
-        				ON DELETE CASCADE\
+    				email   INTEGER NOT NULL, \
+    				section_id 	TEXT NOT NULL\
         );");
 
-		//Table holding the classes in which the TA can teach
-		db.run("CREATE TABLE IF NOT EXISTS TAClasses ( \
-    				ta_id       INTEGER, \
-				    course_name TEXT NOT NULL, \
-				    FOREIGN KEY (ta_id) \
-				        REFERENCES TA(id) \
-				        ON DELETE CASCADE, \
-				    FOREIGN KEY (course_name) \
-				        REFERENCES Courses(name) \
-				        ON DELETE CASCADE \
-		);");
-
-		//Table consisting of the lab section times
-		db.run("CREATE TABLE IF NOT EXISTS SectionTimes ( \
-				    id      INTEGER PRIMARY KEY, \
-				    name    TEXT NOT NULL, \
-				    start_t TIME, \
-				    end_t   TIME, \
-				    FOREIGN KEY (name) \
-				        REFERENCES Courses(name) \
-				        ON DELETE CASCADE \
-		);");
 
 		db.run("CREATE TABLE IF NOT EXISTS Login( \
 					email TEXT NOT NULL UNIQUE NOT NULL, \
 					password TEXT NOT NULL \
 		);");
 
-		//Used to check for valid course names
-		db.run("CREATE TABLE IF NOT EXISTS Courses ( \
-    				name    TEXT NOT NULL UNIQUE NOT NULL \
-		);");
-
-
-		//Used to check for valid course names
-		db.run("CREATE TABLE IF NOT EXISTS CoursesAvailable ( \
-    				course_name    TEXT NOT NULL UNIQUE NOT NULL, \
-    				section_id		INTEGER PRIMARY KEY, \
-    				ta_id			INTEGER NOT NULL, \
-    				ta_f_name		TEXT NOT NULL ,\
-    				ta_l_name		TEXT NOT NULL\
-		);");
 
 		//Used to record the absences of TAs
 		db.run("CREATE TABLE IF NOT EXISTS TAAbsence ( \
-    				ta_id    		INTEGER NOT NULL, \
-    				ta_name			TEXT NOT NULL, \
-    				course_name		TEXT NOT NULL, \
+    				f_name			TEXT NOT NULL, \
+    				l_name 			TEXT NOT NULL, \
+    				email			TEXT NOT NULL, \
     				section_id		INTEGER PRIMARY KEY \
 		);");
 
-
-
 	});
 }
-
 
 /*******************************************************************************/
 
@@ -158,17 +113,69 @@ function verifyLogin(email, password, callback) {
 	db.serialize(function(){
 		db.each("SELECT email email, password password FROM Login", function(err, row) {
 			if(row.email == email && row.password == password)
-        return callback(true);
+        		return callback(true);
 		});
 	});
 }
 
 /*******************************************************************************/
 
-function insertNewTA(fname, lname, id, email, phone) {
+//Function that deletes all TA schedule and add in the new ones passed when saved is pressed
+function saveSections(sections, email){
+
+	db.serialize(function(){
+
+		var remove = db.prepare("DELETE FROM Available WHERE email=?");
+		remove.run(email); // Remove all the TAs old schedule
+
+		for(section_id in sections){
+			insertNewAvailability(email, section_id);
+		}
+		remove.finalize();
+		
+	});
+
+}
+
+/*******************************************************************************/
+
+//Returns json that contains all the TAs in the system 
+function getAllTAs(callback) {
+	db.serialize(function(){
+		var ta_array = [];
+		db.each("SELECT first_name fname, last_name lname FROM TA", function(err, row) {
+			var ta = row.fname + " " + row.lname;
+			ta_array.push(ta);
+        		
+		});
+		var json = '{ TAs : [ ' + ta_array.join() + '] }' ;
+		var obj = JSON.parse(json);
+		return callback(obj);	
+	});
+}
+
+/*******************************************************************************/
+
+//Returns json containing all the sections a TA is available for 
+function getTASchedule(email, callback) {
+	var section_array = [];
+	db.serialize(function(){
+		db.each("SELECT section_id section FROM Available", function(err, row) {
+			section_array.push(section);
+		});
+
+		var json = '{ Sections : [ ' + section_array.join() + '] }' ;
+		var obj = JSON.parse(json);
+		return callback(obj);
+	});
+}
+
+/*******************************************************************************/
+
+function insertNewTA(fname, lname, email, phone) {
 	db.serialize(function() {
-		var ta = db.prepare("INSERT OR REPLACE INTO TA (first_name,last_name, id, email, phone) VALUES (?,?,?,?,?)");
-		ta.run(fname, lname, id, email, phone);
+		var ta = db.prepare("INSERT OR REPLACE INTO TA (first_name,last_name, email, phone) VALUES (?,?,?,?)");
+		ta.run(fname, lname, email, phone);
 		ta.finalize();
 
 	});
@@ -176,45 +183,11 @@ function insertNewTA(fname, lname, id, email, phone) {
 
 /*******************************************************************************/
 
-function insertNewAvailability(id, start, end) {
+function insertNewAvailability(email, section_id) {
 	db.serialize(function() {
-		var avail = db.prepare("INSERT INTO Available (ta_id, start_t, end_t) VALUES (?, ? , ?)");
-		avail.run(id, start, end);
+		var avail = db.prepare("INSERT INTO Available (email, section_id) VALUES (?, ?)");
+		avail.run(email, section_id);
 		avail.finalize();
-
-	});
-}
-
-/*******************************************************************************/
-
-function insertNewCourse(course) {
-	db.serialize(function() {
-		var courses = db.prepare("INSERT OR REPLACE INTO Courses (name) VALUES (?)");
-		courses.run(course);
-		courses.finalize();
-
-	});
-}
-
-/*******************************************************************************/
-
-function insertNewTAClass(id, course) {
-	db.serialize(function() {
-		var ta_class = db.prepare("INSERT INTO TAClasses (ta_id, course_name) VALUES(?,?)");
-		ta_class.run(id, course);
-		ta_class.finalize();
-
-	});
-}
-
-/*******************************************************************************/
-
-function insertNewSectionTime(id, name, start, end) {
-	db.serialize(function() {
-		var section = db.prepare("INSERT OR REPLACE INTO SectionTimes (id, name, start_t, end_t) VALUES (?,?,?,?)");
-
-		section.run(id, name, start, end);
-		section.finalize();
 
 	});
 }
@@ -231,16 +204,18 @@ function insertLoginCredential(email, password) {
 	});
 }
 
-
 /*******************************************************************************/
 
-//Inserts the TAs that are available for certain sections
-function insertAvailableCourses(course_name, section_id, ta_id, ta_f_name, ta_l_name) {
+//Inserts a TA into the table that has all the recorded absences
+function insertTAAbsence(f_name, l_name, email, section_id) {
 	db.serialize(function() {
-		var c_avail = db.prepare("INSERT OR IGNORE INTO CoursesAvailable (course_name, section_id, ta_id, ta_f_name, ta_l_name) VALUES (?,?,?,?,?)");
 
-		c_avail.run(course_name, section_id, ta_id, ta_f_name, ta_l_name);
+		db.serialize(function() {
+		var absent = db.prepare("INSERT OR IGNORE INTO TAAbsence (f_name, l_name, email, section_id) VALUES (?,?,?,?)");
+
+		c_avail.run(f_name, l_name, email, section_id);
 		c_avail.finalize();
+		});
 
 	});
 }
@@ -262,21 +237,7 @@ function retrieveAvailableTA(section_id) {
 	});
 }
 
-/*******************************************************************************/
 
-//Inserts a TA into the table that has all the recorded absences
-function addTAAbsence(ta_id, ta_name, course_name, section_id) {
-	db.serialize(function() {
-
-		db.serialize(function() {
-		var absent = db.prepare("INSERT OR IGNORE INTO TAAbsence (ta_id, ta_name, course_name, section_id) VALUES (?,?,?,?)");
-
-		c_avail.run(ta_id, ta_name, course_name, section_id);
-		c_avail.finalize();
-		});
-
-	});
-}
 /*******************************************************************************/
 
 function deleteFromTable() {
