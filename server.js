@@ -113,12 +113,21 @@ function createTable() {
 
 //Verify the login information sent
 function verifyLogin(email, password, callback) {
-  var verified = false;
+  
 	db.serialize(function(){
+		var p_word [];
+		var e_mail [];
+
 		db.each("SELECT email email, password password FROM Login", function(err, row) {
-			if(row.email == email && row.password == password)
-        		return callback(true);
+			p_word.push(row.password);
+			e_mail.push(row.email);
 		});
+
+		if(p_word.includes(password) && e_mail.push(email)){
+			return callback(true);
+		} else{
+			return callback(false);
+		}
 	});
 }
 
