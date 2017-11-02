@@ -12,16 +12,16 @@
     <!-- ==========================
      CSS
     =========================== -->
-    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="../bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="./styles/style.css" rel="stylesheet" type="text/css">
 
     <!-- ==========================
     JS
     =========================== -->
-    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
-    <script async src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script async src="../node_modules/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="../jquery/dist/jquery.min.js"></script>
+    <script src="../popper.js/dist/umd/popper.min.js"></script>
+    <script async src="../bootstrap/dist/js/bootstrap.min.js"></script>
+    <script async src="../flatpickr/dist/flatpickr.min.js"></script>
 
   </head>
   <body>
@@ -29,11 +29,19 @@
       <div class="card">
         <h4 class="card-header">Create Account</h4>
         <div class="card-block">
+          <div style='text-align: left'>
+          <label style='display: block'>
+            <input type='radio' required name='role' value='professor'> Professor
+          </label>
+          <label style='display: block'>
+            <input type='radio' required name='role' value='TA'> TA
+          </label>
+        </div>
           <label><div>First Name</div>
             <input required type="text" name="first_name">
           </label>
           <label><div>Last Name</div>
-            <input required type="text" name="last_namel">
+            <input required type="text" name="last_name">
           </label>
           <label><div>Email</div>
             <input required type="email" name="email">
@@ -50,7 +58,7 @@
         <a style="margin: 5px" href='/login.html'>Sign in to existing account</a>
       </div>
     </form>
-    <!-- <script>
+    <script>
     $("#createAccount").submit(function(e) {
       var data = $(this).serializeArray();
       var sendingObj = {};
@@ -69,6 +77,6 @@
       });
       return false;
     });
-    </script> -->
+    </script>
   </body>
 </html>

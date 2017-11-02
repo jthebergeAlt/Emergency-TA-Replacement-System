@@ -12,16 +12,16 @@
     <!-- ==========================
      CSS
     =========================== -->
-    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="../bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="./styles/style.css" rel="stylesheet" type="text/css">
 
     <!-- ==========================
     JS
     =========================== -->
-    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="../node_modules/popper.js/dist/umd/popper.min.js"></script>
-    <script async src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script async src="../node_modules/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="../jquery/dist/jquery.min.js"></script>
+    <script src="../popper.js/dist/umd/popper.min.js"></script>
+    <script async src="../bootstrap/dist/js/bootstrap.min.js"></script>
+    <script async src="../flatpickr/dist/flatpickr.min.js"></script>
 
   </head>
   <body class='container'>
@@ -75,7 +75,7 @@
         </div>
       </div>
     </form>
-    <hr>
+    <!-- <hr>
     <form>
       <div class="card">
         <h4 class="card-header">Notify of Absence</h4>
@@ -87,7 +87,7 @@
          <button class='btn' type='submit'>Notify</button>
         </div>
       </div>
-    </form>
+    </form> -->
     <script>
     $( document ).ready(function() {
       $("#date").flatpickr({mode: "multiple", minDate: "today"});

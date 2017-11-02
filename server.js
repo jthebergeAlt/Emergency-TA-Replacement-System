@@ -23,6 +23,7 @@ app.get('*', (req, res) => {
 });
 
 app.post('/auth', function (req, res) {
+  console.log('calling verifyLogin');
   verifyLogin(req.body.email, req.body.password, function(verified){
     if(verified)
       res.sendFile(path.resolve(__dirname, 'src/scheduling.html'));
@@ -33,7 +34,11 @@ app.post('/auth', function (req, res) {
 });
 
 app.post('/create', function (req, res) {
-  res.json({test: 'testing'});
+  console.log('create:', req.body);
+  insertNewTA(req.body.first_name, req.body.last_name, req.body.email, req.body.phone);
+  insertLoginCredential(req.body.email, req.body.password);
+
+  res.sendFile(path.resolve(__dirname, 'src/scheduling.html'));
 });
 
 app.post('/update', function (req, res) {
@@ -113,21 +118,20 @@ function createTable() {
 
 //Verify the login information sent
 function verifyLogin(email, password, callback) {
-  
-	db.serialize(function(){
-		var p_word [];
-		var e_mail [];
 
-		db.each("SELECT email email, password password FROM Login", function(err, row) {
-			p_word.push(row.password);
-			e_mail.push(row.email);
+	db.serialize(function(){
+
+		db.all("SELECT email email, password password FROM Login", function(err, allRows) {
+      for (let i = 0; i < allRows.length; i++) {
+        if (allRows[i].email == email  && allRows[i].password == password) {
+          console.log('verified');
+          callback(true);
+          return;
+        }
+      }
+      callback(false);
 		});
 
-		if(p_word.includes(password) && e_mail.push(email)){
-			return callback(true);
-		} else{
-			return callback(false);
-		}
 	});
 }
 
@@ -145,31 +149,31 @@ function saveSections(sections, email){
 			insertNewAvailability(email, section_id);
 		}
 		remove.finalize();
-		
+
 	});
 
 }
 
 /*******************************************************************************/
 
-//Returns json that contains all the TAs in the system 
+//Returns json that contains all the TAs in the system
 function getAllTAs(callback) {
 	db.serialize(function(){
 		var ta_array = [];
 		db.each("SELECT first_name fname, last_name lname FROM TA", function(err, row) {
 			var ta = row.fname + " " + row.lname;
 			ta_array.push(ta);
-        		
+
 		});
 		var json = '{ TAs : [ ' + ta_array.join() + '] }' ;
 		var obj = JSON.parse(json);
-		return callback(obj);	
+		return callback(obj);
 	});
 }
 
 /*******************************************************************************/
 
-//Returns json containing all the sections a TA is available for 
+//Returns json containing all the sections a TA is available for
 function getTASchedule(email, callback) {
 	var section_array = [];
 	db.serialize(function(){
@@ -186,8 +190,9 @@ function getTASchedule(email, callback) {
 /*******************************************************************************/
 
 function insertNewTA(fname, lname, email, phone) {
-	db.serialize(function() {
-		var ta = db.prepare("INSERT OR REPLACE INTO TA (first_name,last_name, email, phone) VALUES (?,?,?,?)");
+  console.log('insertNewTA params:', fname, lname, email, phone);
+  db.serialize(function() {
+		var ta = db.prepare("INSERT OR IGNORE INTO TA (first_name,last_name, email, phone) VALUES (?,?,?,?)");
 		ta.run(fname, lname, email, phone);
 		ta.finalize();
 
