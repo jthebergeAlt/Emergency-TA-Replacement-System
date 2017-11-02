@@ -60,3 +60,11 @@ label {
   cursor: pointer;
   font-size: 20px;
 }
+
+ul {
+  padding: 0;
+  margin: 5px;
+  li {
+    list-style-type: none;
+  }
+}

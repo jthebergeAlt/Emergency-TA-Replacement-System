@@ -18,10 +18,11 @@
     <!-- ==========================
     JS
     =========================== -->
-    <script src="../jquery/dist/jquery.min.js"></script>
-    <script src="../popper.js/dist/umd/popper.min.js"></script>
-    <script async src="../bootstrap/dist/js/bootstrap.min.js"></script>
-    <script async src="../flatpickr/dist/flatpickr.min.js"></script>
+    <script type="text/javascript" src="../jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../popper.js/dist/umd/popper.min.js"></script>
+    <script type="text/javascript" async src="../bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" async src="../flatpickr/dist/flatpickr.min.js"></script>
+    <script type="text/javascript" src="../jshashes/hashes.min.js"></script>
 
   </head>
   <body>
@@ -49,7 +50,10 @@
                             var sendingObj = {};
                             $.map(data, function(obj) {
                               var entries = Object.entries(obj);
-                              sendingObj[entries[0][1]] = entries[1][1];
+                              if (entries[0][1] === 'password') {
+                                sendingObj[entries[0][1]] = MD5.hex(entries[1][1]);
+                              }
+                              else sendingObj[entries[0][1]] = entries[1][1];
                             });
                             $.ajax({
                               url: '/create',
@@ -65,7 +69,6 @@
                                      $.map(data, function(obj) {
                                        sendingArr.push(obj.name);
                                      });
-                                     console.log('email:', email);
                                      sendingArr.push(email);
 
                                      $.ajax({
@@ -83,7 +86,6 @@
                                      type: 'GET',
                                      success: function(list) {
                                        for (let i = 0; i < list.length; i++) {
-                                         console.log('list[i]', list[i]);
                                          $('#TA_list').append('<li>' + list[i].fname + ' ' + list[i].lname + '</li>');
                                        }
                                      }
@@ -107,6 +109,7 @@
       </div>
     </form>
     <script>
+      var MD5 = new Hashes.MD5;
       var email = null;
       $("#login").submit(function(e) {
         var data = $(this).serializeArray();
@@ -114,7 +117,8 @@
         var sendingObj = {};
         $.map(data, function(obj) {
           var entries = Object.entries(obj);
-          sendingObj[entries[0][1]] = entries[1][1];
+          if (entries[0][1] === 'password') sendingObj[entries[0][1]] = MD5.hex(entries[1][1]);
+          else sendingObj[entries[0][1]] = entries[1][1];
         });
         $.ajax({
           url: '/auth',
@@ -129,9 +133,7 @@
                 $.map(data, function(obj) {
                   sendingArr.push(obj.name);
                 });
-                console.log('email:', email);
                 sendingArr.push(email);
-                                console.log(sendingArr.toString());
                 $.ajax({
                   url: '/insertSchedule',
                   type: 'POST',
@@ -157,7 +159,6 @@
                 data: email,
                 success: function(arr) {
                  for (let i = 0; i < arr.length; i++) {
-                   console.log('arr[i]', arr[i]);
                    $("input:checkbox[name='" + arr[i].trim() + "']").prop( "checked", true );
                  }
                 }

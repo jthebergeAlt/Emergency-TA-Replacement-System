@@ -8,28 +8,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 openDB();
 
-// createTable();
-//
-// insertNewTA("Ken", "Wakaba", "kwakaba@scu.edu", "253-227-5534");
-// insertNewTA("Ben","Wakaba","bwakaba@gmail.com","253-222-6678");
-// insertNewTA("Joe", "Smith", "jsmith@gmail.com", "123-456-7890");
-//
-// insertNewAvailability("kwakaba@scu.edu", 123);
-// insertNewAvailability("kwakaba@scu.edu", 234);
-// insertNewAvailability("kwakaba@scu.edu", 456);
-//
-// insertNewAvailability("bwakaba@gmail.com", 123);
-// insertNewAvailability("bwakaba@gmail.com", 456);
-// insertNewAvailability("bwakaba@gmail.com", 678);
-//
-// insertNewAvailability("jsmith@gmail.com", 123);
-// insertNewAvailability("jsmith@gmail.com", 234);
-// insertNewAvailability("jsmith@gmail.com", 345);
-//
-// insertLoginCredential("kwakaba@scu.edu", "1234");
-// insertLoginCredential("bwakaba@gmail.com", "abc");
-// insertLoginCredential("jsmith@gmail.com", "jsmith");
-
+createTable();
 
 app.use(compression());
 app.use(express.static(__dirname + '/src/public'));
