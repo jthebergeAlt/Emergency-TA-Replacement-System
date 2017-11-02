@@ -7,6 +7,30 @@ const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
 openDB();
+/*
+createTable();
+
+insertNewTA("Ken", "Wakaba", "kwakaba@scu.edu", "253-227-5534");
+insertNewTA("Ben","Wakaba","bwakaba@gmail.com","253-222-6678");
+insertNewTA("Joe", "Smith", "jsmith@gmail.com", "123-456-7890");
+
+insertNewAvailability("kwakaba@scu.edu", 123);
+insertNewAvailability("kwakaba@scu.edu", 234);
+insertNewAvailability("kwakaba@scu.edu", 456);
+
+insertNewAvailability("bwakaba@gmail.com", 123);
+insertNewAvailability("bwakaba@gmail.com", 456);
+insertNewAvailability("bwakaba@gmail.com", 678);
+
+insertNewAvailability("jsmith@gmail.com", 123);
+insertNewAvailability("jsmith@gmail.com", 234);
+insertNewAvailability("jsmith@gmail.com", 345);
+
+insertLoginCredential("kwakaba@scu.edu", "1234");
+insertLoginCredential("bwakaba@gmail.com", "abc");
+insertLoginCredential("jsmith@gmail.com", "jsmith");
+
+*/
 
 app.use(compression());
 app.use(express.static(__dirname + '/src'));
@@ -58,6 +82,8 @@ DATABASE
 
 var db;
 
+
+
 function openDB() {
 	db = new sqlite3.Database('mydb.db', (err) => {
 		if (err) {
@@ -83,23 +109,23 @@ function createTable() {
 
 		//Table that holds all the contact information about the TA
 		db.run("CREATE TABLE IF NOT EXISTS TA (\
-				    first_name   TEXT NOT NULL,\
+				    first_name  TEXT NOT NULL,\
 				    last_name   TEXT NOT NULL,\
-				    email   TEXT NOT NULL,\
-				    phone   TEXT NOT NULL\
+				    email   	TEXT NOT NULL,\
+				    phone   	TEXT NOT NULL\
 		);");
 
 
 		//Table that holds the listing of all the times the TA is available
 		db.run("CREATE TABLE IF NOT EXISTS Available ( \
-    				email   INTEGER NOT NULL, \
-    				section_id 	TEXT NOT NULL\
+    				email   	TEXT NOT NULL, \
+    				section_id 	INTEGER NOT NULL\
         );");
 
 
 		db.run("CREATE TABLE IF NOT EXISTS Login( \
-					email TEXT NOT NULL UNIQUE NOT NULL, \
-					password TEXT NOT NULL \
+					email 		TEXT NOT NULL UNIQUE NOT NULL, \
+					password 	TEXT NOT NULL \
 		);");
 
 
@@ -108,11 +134,12 @@ function createTable() {
     				f_name			TEXT NOT NULL, \
     				l_name 			TEXT NOT NULL, \
     				email			TEXT NOT NULL, \
-    				section_id		INTEGER PRIMARY KEY \
+    				section_id		INTEGER NOT NULL \
 		);");
 
 	});
 }
+
 
 /*******************************************************************************/
 
@@ -134,6 +161,7 @@ function verifyLogin(email, password, callback) {
 
 	});
 }
+
 
 /*******************************************************************************/
 
