@@ -18,6 +18,16 @@ button {
     background-color: $SCUdarkred;
   }
 }
+
+.link {
+  color: $SCUred;
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+    color: $SCUdarkred;
+  }
+}
+
 form {
   background-color: $SCUred;
   width: 100%;

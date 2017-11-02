@@ -38,13 +38,14 @@
          <button class='btn' type='submit'>Sign In</button>
         </div>
         <hr style="margin: 0">
-        <div onclick="$.ajax({
+        <div class='link' onclick="$.ajax({
                         url: '/create',
                         type: 'GET',
                         success: function(response) {
                           $('body').html(response);
                           $('#createAccount').submit(function(e) {
                             var data = $(this).serializeArray();
+                            email = data[3].value;
                             var sendingObj = {};
                             $.map(data, function(obj) {
                               var entries = Object.entries(obj);
@@ -55,8 +56,48 @@
                               type: 'POST',
                               data: sendingObj,
                               success: function(response) {
-                                if (response) console.log(response);
-                                else console.log(response);
+                                if (response) {
+                                   $('body').html(response);
+
+                                   $('#schedule').submit(function(e) {
+                                     var data = $(this).serializeArray();
+                                     var sendingArr = [];
+                                     $.map(data, function(obj) {
+                                       sendingArr.push(obj.name);
+                                     });
+                                     console.log('email:', email);
+                                     sendingArr.push(email);
+
+                                     $.ajax({
+                                       url: '/insertSchedule',
+                                       type: 'POST',
+                                       data: sendingArr.toString(),
+                                       success: function(response) {
+                                         console.log('inserting schedule response:', response);
+                                       }
+                                     });
+                                     return false;
+                                   });
+                                   $.ajax({
+                                     url: '/TA_list',
+                                     type: 'GET',
+                                     success: function(list) {
+                                       for (let i = 0; i < list.length; i++) {
+                                         console.log('list[i]', list[i]);
+                                         $('#TA_list').append('<li>' + list[i].fname + ' ' + list[i].lname + '</li>');
+                                       }
+                                     }
+                                   });
+                                   $.ajax({
+                                     url: '/get_schedule',
+                                     type: 'POST',
+                                     data: email,
+                                     success: function(obj) {
+                                      console.log('schedule obj', obj);
+                                     }
+                                   });
+                                 }
+                                else console.log('no response after creating account');
                               }
                             });
                             return false;
@@ -66,8 +107,10 @@
       </div>
     </form>
     <script>
+      var email = null;
       $("#login").submit(function(e) {
         var data = $(this).serializeArray();
+        email = data[0].value;
         var sendingObj = {};
         $.map(data, function(obj) {
           var entries = Object.entries(obj);
@@ -75,30 +118,56 @@
         });
         $.ajax({
           url: '/auth',
-          type: "POST",
+          type: 'POST',
           data: sendingObj,
           success: function(response) {
             if (response) {
               $('body').html(response);
-
+              $("#schedule").submit(function(e) {
+                var data = $(this).serializeArray();
+                var sendingArr = [];
+                $.map(data, function(obj) {
+                  sendingArr.push(obj.name);
+                });
+                console.log('email:', email);
+                sendingArr.push(email);
+                                console.log(sendingArr.toString());
+                $.ajax({
+                  url: '/insertSchedule',
+                  type: 'POST',
+                  data: sendingArr.toString(),
+                  success: function(response) {
+                    console.log('inserting schedule response:', response);
+                  }
+                });
+                return false;
+              });
               $.ajax({
                 url: '/TA_list',
-                type: "GET",
+                type: 'GET',
                 success: function(list) {
                   for (let i = 0; i < list.length; i++) {
-                    console.log('list[i]', list[i]);
                     $('#TA_list').append('<li>' + list[i].fname + ' ' + list[i].lname + '</li>');
                   }
                 }
               });
+              $.ajax({
+                url: '/get_schedule',
+                type: 'POST',
+                data: email,
+                success: function(arr) {
+                 for (let i = 0; i < arr.length; i++) {
+                   console.log('arr[i]', arr[i]);
+                   $("input:checkbox[name='" + arr[i].trim() + "']").prop( "checked", true );
+                 }
+                }
+              });
 
               $("#schedule").submit(function(test) {
-                console.log("TESTING:", $(this).serialize());
                 return false;
               });
             }
             else {
-              console.log('ok');
               $("<span style='padding: 0; margin-top: 5px;'>Invalid username/password</span>").insertAfter(".card-header");
             }
           }

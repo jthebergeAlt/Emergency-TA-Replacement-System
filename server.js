@@ -7,30 +7,29 @@ const app = express();
 const sqlite3 = require('sqlite3').verbose();
 
 openDB();
-/*
-createTable();
 
-insertNewTA("Ken", "Wakaba", "kwakaba@scu.edu", "253-227-5534");
-insertNewTA("Ben","Wakaba","bwakaba@gmail.com","253-222-6678");
-insertNewTA("Joe", "Smith", "jsmith@gmail.com", "123-456-7890");
+// createTable();
+//
+// insertNewTA("Ken", "Wakaba", "kwakaba@scu.edu", "253-227-5534");
+// insertNewTA("Ben","Wakaba","bwakaba@gmail.com","253-222-6678");
+// insertNewTA("Joe", "Smith", "jsmith@gmail.com", "123-456-7890");
+//
+// insertNewAvailability("kwakaba@scu.edu", 123);
+// insertNewAvailability("kwakaba@scu.edu", 234);
+// insertNewAvailability("kwakaba@scu.edu", 456);
+//
+// insertNewAvailability("bwakaba@gmail.com", 123);
+// insertNewAvailability("bwakaba@gmail.com", 456);
+// insertNewAvailability("bwakaba@gmail.com", 678);
+//
+// insertNewAvailability("jsmith@gmail.com", 123);
+// insertNewAvailability("jsmith@gmail.com", 234);
+// insertNewAvailability("jsmith@gmail.com", 345);
+//
+// insertLoginCredential("kwakaba@scu.edu", "1234");
+// insertLoginCredential("bwakaba@gmail.com", "abc");
+// insertLoginCredential("jsmith@gmail.com", "jsmith");
 
-insertNewAvailability("kwakaba@scu.edu", 123);
-insertNewAvailability("kwakaba@scu.edu", 234);
-insertNewAvailability("kwakaba@scu.edu", 456);
-
-insertNewAvailability("bwakaba@gmail.com", 123);
-insertNewAvailability("bwakaba@gmail.com", 456);
-insertNewAvailability("bwakaba@gmail.com", 678);
-
-insertNewAvailability("jsmith@gmail.com", 123);
-insertNewAvailability("jsmith@gmail.com", 234);
-insertNewAvailability("jsmith@gmail.com", 345);
-
-insertLoginCredential("kwakaba@scu.edu", "1234");
-insertLoginCredential("bwakaba@gmail.com", "abc");
-insertLoginCredential("jsmith@gmail.com", "jsmith");
-
-*/
 
 app.use(compression());
 app.use(express.static(__dirname + '/src/public'));
@@ -70,6 +69,14 @@ app.get('/TA_list', (req, res) => {
   });
 });
 
+app.post('/get_schedule', (req, res) => {
+  console.log('req body', req.body);
+  var email = Object.keys(req.body)[0];
+  getTASchedule(email, function(obj) {
+      res.status(200).send(obj);
+  });
+});
+
 app.post('/create', function (req, res) {
   insertNewTA(req.body.first_name, req.body.last_name, req.body.email, req.body.phone);
   insertLoginCredential(req.body.email, req.body.password);
@@ -79,6 +86,25 @@ app.post('/create', function (req, res) {
 
 app.post('/update', function (req, res) {
   res.json({test: 'testing'});
+});
+
+
+app.post('/insertSchedule', function (req, res) {
+  console.log('req body', req.body);
+  var keys = Object.keys(req.body);
+  keys = keys[0].split(',');
+  var selectedItems = '';
+  var email;
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (selectedItems != '') selectedItems = selectedItems + ', ' + keys[i];
+    else selectedItems = keys[i];
+  }
+  selectedItems = selectedItems.split(',');
+  email = keys[keys.length - 1];
+  saveSections(selectedItems, email);
+  // var data = JSON.parse("[" + keys + "]");
+  // console.log('req body:', data);
+
 });
 
 app.listen(port);
@@ -124,7 +150,7 @@ function createTable() {
 				    first_name  TEXT NOT NULL,\
 				    last_name   TEXT NOT NULL,\
 				    email   	TEXT NOT NULL,\
-				    phone   	TEXT NOT NULL\
+				    phone   	TEXT NOT NULL,\
             CONSTRAINT   email_unique UNIQUE (email) \
 		);");
 
@@ -132,13 +158,13 @@ function createTable() {
 		//Table that holds the listing of all the times the TA is available
 		db.run("CREATE TABLE IF NOT EXISTS Available ( \
     				email   	TEXT NOT NULL, \
-    				section_id 	INTEGER NOT NULL\
+    				section_id 	TEXT NOT NULL\
         );");
 
 
 		db.run("CREATE TABLE IF NOT EXISTS Login( \
 					email 		TEXT NOT NULL UNIQUE NOT NULL, \
-					password 	TEXT NOT NULL \
+					password 	TEXT NOT NULL, \
           CONSTRAINT   email_unique UNIQUE (email) \
 		);");
 
@@ -181,16 +207,21 @@ function verifyLogin(email, password, callback) {
 
 //Function that deletes all TA schedule and add in the new ones passed when saved is pressed
 function saveSections(sections, email){
-
+  console.log('sections:', sections);
+  console.log('email:', email);
 	db.serialize(function(){
 
 		var remove = db.prepare("DELETE FROM Available WHERE email=?");
 		remove.run(email); // Remove all the TAs old schedule
 
 		for(section_id in sections){
-			insertNewAvailability(email, section_id);
+			insertNewAvailability(email, sections[section_id]);
 		}
 		remove.finalize();
+
+    db.each("SELECT section_id id, email email FROM Available", function(err, row){
+      console.log(row.email + ' ' + row.id);
+    });
 
 	});
 
@@ -211,17 +242,18 @@ function getAllTAs(callback) {
 
 //Returns json containing all the sections a TA is available for
 function getTASchedule(email, callback) {
-	var section_array = [];
+  console.log('TA schedule email', email);
 	db.serialize(function(){
-		db.each("SELECT section_id section FROM Available", function(err, row) {
-			section_array.push(section);
-		});
+    var sendingArr = [];
+		db.all("SELECT section_id section FROM Available WHERE email=?", email,function(err, allRows) {
+      for (i in allRows) {
+        sendingArr.push(allRows[i].section);
+      }
+      return callback(sendingArr);
+      });
 
-		var json = '{ Sections : [ ' + section_array.join() + '] }' ;
-		var obj = JSON.parse(json);
-		return callback(obj);
-	});
-}
+		});
+	}
 
 /*******************************************************************************/
 
