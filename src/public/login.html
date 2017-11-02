@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>TA Replacements Web App</title>
+
+    <!-- ==========================
+     Meta Tags
+    =========================== -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ==========================
+     CSS
+    =========================== -->
+    <link href="../bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="./styles/style.css" rel="stylesheet" type="text/css">
+
+    <!-- ==========================
+    JS
+    =========================== -->
+    <script src="../jquery/dist/jquery.min.js"></script>
+    <script src="../popper.js/dist/umd/popper.min.js"></script>
+    <script async src="../bootstrap/dist/js/bootstrap.min.js"></script>
+    <script async src="../flatpickr/dist/flatpickr.min.js"></script>
+
+  </head>
+  <body>
+    <form id='login'>
+      <div class="card">
+        <h4 class="card-header">Sign In</h4>
+        <div class="card-block">
+          <label><div>Email</div>
+            <input required type="email" name="email">
+          </label>
+          <label><div>Password</div>
+         <input required type="password" name="password">
+          </label>
+         <button class='btn' type='submit'>Sign In</button>
+        </div>
+        <hr style="margin: 0">
+        <div onclick="$.ajax({
+                        url: '/create',
+                        type: 'GET',
+                        success: function(response) {
+                          $('body').html(response);
+                          $('#createAccount').submit(function(e) {
+                            var data = $(this).serializeArray();
+                            var sendingObj = {};
+                            $.map(data, function(obj) {
+                              var entries = Object.entries(obj);
+                              sendingObj[entries[0][1]] = entries[1][1];
+                            });
+                            $.ajax({
+                              url: '/create',
+                              type: 'POST',
+                              data: sendingObj,
+                              success: function(response) {
+                                if (response) console.log(response);
+                                else console.log(response);
+                              }
+                            });
+                            return false;
+                          });
+                        }
+                      });">Create account</div>
+      </div>
+    </form>
+    <script>
+      $("#login").submit(function(e) {
+        var data = $(this).serializeArray();
+        var sendingObj = {};
+        $.map(data, function(obj) {
+          var entries = Object.entries(obj);
+          sendingObj[entries[0][1]] = entries[1][1];
+        });
+        $.ajax({
+          url: '/auth',
+          type: "POST",
+          data: sendingObj,
+          success: function(response) {
+            if (response) {
+              $('body').html(response);
+
+              $.ajax({
+                url: '/TA_list',
+                type: "GET",
+                success: function(list) {
+                  for (let i = 0; i < list.length; i++) {
+                    console.log('list[i]', list[i]);
+                    $('#TA_list').append('<li>' + list[i].fname + ' ' + list[i].lname + '</li>');
+                  }
+                }
+              });
+
+              $("#schedule").submit(function(test) {
+                console.log("TESTING:", $(this).serialize());
+                return false;
+              });
+            }
+            else {
+              console.log('ok');
+              $("<span style='padding: 0; margin-top: 5px;'>Invalid username/password</span>").insertAfter(".card-header");
+            }
+          }
+        });
+        return false;
+      });
+
+    </script>
+  </body>
+</html>

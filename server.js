@@ -33,7 +33,7 @@ insertLoginCredential("jsmith@gmail.com", "jsmith");
 */
 
 app.use(compression());
-app.use(express.static(__dirname + '/src'));
+app.use(express.static(__dirname + '/src/public'));
 app.use(express.static(__dirname + '/node_modules'));
 
 // parse application/x-www-form-urlencoded
@@ -42,8 +42,16 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'src/login.html'))
+// app.get('*', (req, res) => {
+//   res.redirect('/');
+// });
+
+app.get('/', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'src/public/login.html'))
+});
+
+app.get('/create', function (req, res) {
+  res.sendFile(path.resolve(__dirname, 'src/createAccount.html'))
 });
 
 app.post('/auth', function (req, res) {
@@ -52,13 +60,17 @@ app.post('/auth', function (req, res) {
     if(verified)
       res.sendFile(path.resolve(__dirname, 'src/scheduling.html'));
     else
-      res.sendFile(path.resolve(__dirname, 'src/loginFailed.html'));
+      res.status(200).send(false);
   })
+});
 
+app.get('/TA_list', (req, res) => {
+  getAllTAs(function(obj) {
+    res.status(200).send(obj);
+  });
 });
 
 app.post('/create', function (req, res) {
-  console.log('create:', req.body);
   insertNewTA(req.body.first_name, req.body.last_name, req.body.email, req.body.phone);
   insertLoginCredential(req.body.email, req.body.password);
 
@@ -113,6 +125,7 @@ function createTable() {
 				    last_name   TEXT NOT NULL,\
 				    email   	TEXT NOT NULL,\
 				    phone   	TEXT NOT NULL\
+            CONSTRAINT   email_unique UNIQUE (email) \
 		);");
 
 
@@ -126,6 +139,7 @@ function createTable() {
 		db.run("CREATE TABLE IF NOT EXISTS Login( \
 					email 		TEXT NOT NULL UNIQUE NOT NULL, \
 					password 	TEXT NOT NULL \
+          CONSTRAINT   email_unique UNIQUE (email) \
 		);");
 
 
@@ -187,15 +201,9 @@ function saveSections(sections, email){
 //Returns json that contains all the TAs in the system
 function getAllTAs(callback) {
 	db.serialize(function(){
-		var ta_array = [];
-		db.each("SELECT first_name fname, last_name lname FROM TA", function(err, row) {
-			var ta = row.fname + " " + row.lname;
-			ta_array.push(ta);
-
+		db.all("SELECT first_name fname, last_name lname FROM TA", function(err, allRows) {
+      return callback(allRows);
 		});
-		var json = '{ TAs : [ ' + ta_array.join() + '] }' ;
-		var obj = JSON.parse(json);
-		return callback(obj);
 	});
 }
 
