@@ -181,6 +181,16 @@ function verifyLogin(email, password, callback) {
 	});
 }
 
+function verifyLoginPHP(email, password, callback) {
+	$.post("support.php", { query: "verify_login", email: email, password: password}, function(data) {
+        if (data.status == SUCCESS){
+			callback(data);
+		} else {
+			alert("Failed to insert new TA, status " + data.status);
+		}
+    });
+}
+
 
 /*******************************************************************************/
 
@@ -206,6 +216,20 @@ function saveSections(sections, email){
 
 }
 
+function saveSectionsPHP(sections, email){
+	$.post("support.php", { query: "delete_sections", email: email}, function(data) {
+        if (data.status == SUCCESS){
+			callback(data);
+		} else {
+			alert("Failed to insert new TA, status " + data.status);
+		}
+    });
+
+    for(section_id in sections){
+		insertNewAvailability(email, sections[section_id]);
+	}
+}
+
 /*******************************************************************************/
 
 //Returns json that contains all the TAs in the system
@@ -215,6 +239,17 @@ function getAllTAs(callback) {
       return callback(allRows);
 		});
 	});
+}
+
+function getAllTAsPHP(callback) {
+	$.post("support.php", { query: "get_TAs" }, function(data){
+		data = JSON.parse(data);
+		if (data.status == SUCCESS){
+			return callback(data);
+		} else {
+			alert("Failed to get TAs, status " + data.status);
+		}
+	}	
 }
 
 /*******************************************************************************/
@@ -232,7 +267,19 @@ function getTASchedule(email, callback) {
       });
 
 		});
+}
+
+function getTASchedulePHP(new_email, callback) {
+	$.post("support.php", { query: "get_schedule" email: new_email}, function(data){
+		data = JSON.parse(data);
+		if (data.status == SUCCESS){
+			return callback(data);
+		} else {
+			alert("Failed to get sections, status " + data.status);
+		}
 	}
+}
+
 
 /*******************************************************************************/
 
@@ -246,6 +293,18 @@ function insertNewTA(fname, lname, email, phone) {
 	});
 }
 
+function insetNewTAPHP(fname, lname, email, phone) {
+	$.post("support.php", { query: "new_ta", fname: fname, lname: lname, email: email, phone: phone }, function(data) {
+        if (data.status == SUCCESS){
+			alert(data);
+		} else {
+			alert("Failed to insert new TA, status " + data.status);
+		}
+    });
+}
+
+
+
 /*******************************************************************************/
 
 function insertNewAvailability(email, section_id) {
@@ -255,6 +314,16 @@ function insertNewAvailability(email, section_id) {
 		avail.finalize();
 
 	});
+}
+
+function insertNewAvailabilityPHP(email, section_id) {
+	$.post("support.php", { query: "new_avail", email: email, section_id: section_id}, function(data) {
+        if (data.status == SUCCESS){
+			alert(data);
+		} else {
+			alert("Failed to get sections, status " + data.status);
+		}
+    });
 }
 
 /*******************************************************************************/
@@ -267,6 +336,16 @@ function insertLoginCredential(email, password) {
 		login.finalize();
 
 	});
+}
+
+function insertLoginCredentialPHP(email, password) {
+	$.post("support.php", { query: "new_login", email: email, password: password}, function(data) {
+        if (data.status == SUCCESS){
+			alert(data);
+		} else {
+			alert("Failed to insert login credentials, status " + data.status);
+		}
+    });
 }
 
 /*******************************************************************************/
@@ -284,6 +363,17 @@ function insertTAAbsence(f_name, l_name, email, section_id) {
 
 	});
 }
+
+function insertTAAbsencePHP(f_name, l_name, email, section_id) {
+	$.post("support.php", { query: "new_absense", f_name: f_name, l_name: l_name, email: email, password: password}, function(data) {
+        if (data.status == SUCCESS){
+			alert(data);
+		} else {
+			alert("Failed to insert login credentials, status " + data.status);
+		}
+    });
+}
+
 
 /*******************************************************************************/
 
