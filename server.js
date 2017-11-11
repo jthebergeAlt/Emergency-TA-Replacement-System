@@ -89,7 +89,7 @@ app.post('/insertSchedule', function (req, res) {
 app.listen(port);
 console.info("Server started on port " + port);
 
-
+(#login_button).click(verifyLogin());
 
 
 

@@ -1,3 +1,4 @@
+<?php 
 # response codes
 define("SUCCESS", 0);
 define("SERVER_ERROR", 1);
@@ -21,23 +22,40 @@ function openDB()
 
 function sqlVerifyLogin()
 {
+
+    session_start();
+
+    $email = "";
+    $password = "";
+
     $db = openDB();
-    $stmt = $db->stmt_init();
-    $stmt->prepare("SELECT email email, password password FROM Login");
-    $stmt->bind_param("ss", $_POST["email"], $_POST["password"]);
 
-    if (!$stmt->execute()) {
-        echo json_encode(array("status" => SERVER_ERROR, "message" => "failed to verify login"));
-        return;
-    }
+    // LOGIN USER
+    if (isset($_POST['login_user'])) {
+        $email = mysqli_real_escape_string($db, $_POST['email']);
+        $password = mysqli_real_escape_string($db, $_POST['password']);
 
-    $stmt->bind_result($email, $password);
-    while ($stmt->fetch()) {
-        if(($_POST["email"] == $email) && ($_POST["password"] == $password)){
-            return SUCCESS;
+    
+        $query = "SELECT * FROM Login WHERE email='$email' AND password='$password'";
+        $results = mysqli_query($db, $query);
+
+        if (mysqli_num_rows($results) == 1) {
+            $_SESSION['username'] = $username;
+            $_SESSION['success'] = "You are now logged in";
+            header('location: scheduler.php');
         }
+        
     }
 
+}
+
+###########################################################################################################
+function logout(){
+    if(isset($_GET['logout'])){
+        session_destroy();
+        unset($_SESSION['email']);
+        header('location: login.php');
+    }
 }
 
 ###########################################################################################################
@@ -86,10 +104,10 @@ function sqlAllTAs(){
 
 ###########################################################################################################
 
-fuction sqlTASchedule(){
+function sqlTASchedule(){
     $db = openDB();
     $stmt = $db->stmt_init();
-    $stmt->prepare("SELECT section_id FROM Available WHERE email=?);
+    $stmt->prepare("SELECT section_id FROM Available WHERE email=?");
     $stmt->bind_param("s", $_POST["email"]);
 
     if (!$stmt->execute()) {
@@ -111,19 +129,34 @@ fuction sqlTASchedule(){
 ###########################################################################################################
 
 function sqlInsertTA(){
-    $db = openDB();
-    $stmt = $db->stmt_init();
-    $stmt->prepare("INSERT OR IGNORE INTO TA (first_name,last_name, email, phone) VALUES (?,?,?,?)");
-    $stmt->bind_param("ssss", $_POST["fname"], $_POST["lname"], $_POST["email"], $_POST["phone"]);
 
-    if (!$stmt->execute()) {
-        echo json_encode(array("status" => SERVER_ERROR, "message" => "failed to get Insert new TA"));
-        return;
+    session_start();
+
+    $username = "";
+    $password = "";
+    $errors = array();
+
+    $db = openDB();
+
+    if(isset($_POST['register_ta'])){
+        $fname = mysqli_real_escape_string($_POST['fname']);
+        $lname = mysqli_real_escape_string($_POST['lname']);
+        $email = mysqli_real_escape_string($_POST['email']);
+        $password = mysqli_real_escape_string($_POST['password']);
+        $phone = mysqli_real_escape_string($_POST['phone']);
+
+        $sql = "INSERT OR IGNORE INTO TA (first_name,last_name, email, password, phone) VALUES ('$fname','$lname','$email','$password','$phone')";
+        mysqli_query($db, $sql);
+        $_SESSION['email'] = $email;
+        $_SESSION['success'] = "You are logged in successfully!";
+        header('location: scheduler.php');
+        
     }
 
-    mysqli_close($db);
+    //echo json_encode(array("status" => SUCCESS));
 
-    echo json_encode(array("status" => SUCCESS));
+
+
 }
 
 ###########################################################################################################
@@ -182,28 +215,5 @@ function sqlNewAbsense(){
 
 ###########################################################################################################
 
-switch ($_POST["query"]) {
-    case "verify_login":
-        sqlVerifyLogin();
-        break;
-    case "delete_sections":
-        sqlDeleteSections();
-        break;
-    case "get_TAs":
-        sqlAllTAs();
-        break;
-    case "get_schedule":
-        sqlTASchedule();
-        break;
-    case "new_ta":
-        sqlInsertTA();
-        break;
-    case "new_avail":
-        sqlNewAvailability();
-        break;
-    case "new_login":
-        sqlNewLogin();
-        break;
-    case "new_absense";
-        sqlNewAbsense();
-        break;
+
+?>
