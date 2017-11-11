@@ -14,7 +14,7 @@
     =========================== -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link href="public/styles/style.css" rel="stylesheet" type="text/css">
+    <link href="./styles/style.css" rel="stylesheet" type="text/css">
 
     <!-- ==========================
     JS
@@ -28,37 +28,20 @@
 
   </head>
   <body>
-    <form method='post' action='/create' id='createAccount'>
+    <form id='login' method='post' action='register.php'>
       <div class="card">
-        <h4 class="card-header">Create Account</h4>
+        <h4 class="card-header">Sign In</h4>
         <div class="card-block">
-          <div style='text-align: left'>
-          <label style='display: block'>
-            <input type='radio' required name='role' value='professor'> Professor
-          </label>
-          <label style='display: block'>
-            <input type='radio' required name='role' value='TA'> TA
-          </label>
-        </div>
-          <label><div>First Name</div>
-            <input required type="text" name="first_name">
-          </label>
-          <label><div>Last Name</div>
-            <input required type="text" name="last_name">
-          </label>
           <label><div>Email</div>
             <input required type="email" name="email">
-          </label>
-          <label><div>Phone Number</div>
-            <input required type="tel" name="phone">
           </label>
           <label><div>Password</div>
          <input required type="password" name="password">
           </label>
-         <button class='btn' type='submit'>Create account</button>
+         <button class='btn' type='submit'>Sign In</button>
         </div>
         <hr style="margin: 0">
-        <a class='link' style="margin: 5px" href='/'>Sign in to existing account</a>
+        <div class='link'>Create account</div>
       </div>
     </form>
   </body>
