@@ -4,10 +4,11 @@
 
 	session_start();
 
-    // $email = "";
-    // $password = "";
 
     $db = openDB();
+
+    $_SESSION['email'] = $_POST['email'];
+    $_SESSION['password'] = $_POST['password'];
 
     $email = mysqli_real_escape_string($db, $_POST['email']);
     $password = mysqli_real_escape_string($db, $_POST['password']);
@@ -25,24 +26,6 @@
     }
         
    
-
-
-
-
-
-
-
-    /*
-    $results = mysqli_query($db, $query);
-    
-
-    if (echomysqli_num_rows($results) == 1) {
-        $_SESSION['username'] = $username;
-        $_SESSION['success'] = "You are now logged in";
-        header('location: register.php');
-    }
-        */
-    
 
 
 ?>

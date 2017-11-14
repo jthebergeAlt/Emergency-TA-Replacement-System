@@ -12,11 +12,15 @@ define("DBPASS", "00001096003");
 define("DBNAME", "sdb_kwakaba");
 
 
+
 function openDB()
 {
     $database = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME) or die("Error" . mysqli_error($database));
     return $database;
 }
+
+
+
 /*
 ###########################################################################################################
 

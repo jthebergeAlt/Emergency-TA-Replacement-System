@@ -1,8 +1,19 @@
 <?php
 
-require "support.php";
+define("DBHOST", "dbserver.engr.scu.edu");
+define("DBUSER", "kwakaba");
+define("DBPASS", "00001096003");
+define("DBNAME", "sdb_kwakaba");
 
-session_start();
+
+
+function openDB()
+{
+    $database = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME) or die("Error" . mysqli_error($database));
+    return $database;
+}
+
+    session_start();
 
     $username = "";
     $password = "";
