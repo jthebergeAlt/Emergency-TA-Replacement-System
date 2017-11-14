@@ -17,7 +17,7 @@ function openDB()
     $database = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME) or die("Error" . mysqli_error($database));
     return $database;
 }
-
+/*
 ###########################################################################################################
 
 function sqlVerifyLogin()
@@ -214,6 +214,6 @@ function sqlNewAbsense(){
 }
 
 ###########################################################################################################
-
+*/
 
 ?>
