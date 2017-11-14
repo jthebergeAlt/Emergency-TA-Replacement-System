@@ -16,18 +16,12 @@ session_start();
     $password = mysqli_real_escape_string($db,$_POST['password']);
     $phone = mysqli_real_escape_string($db,$_POST['phone']);
 
-    echo $fname;
-    echo $lname;
-    echo $email;
-    echo $password;
-    echo $phone;
-
     $sql = "INSERT INTO TA (first_name,last_name, email, password, phone) VALUES ('$fname','$lname','$email','$password','$phone')";
     mysqli_query($db, $sql);
     $_SESSION['email'] = $email;
     $_SESSION['success'] = "You are logged in successfully!";
     echo "Login successful";
-    header('location: index.php');
+    header('location: index.html');
         
     
 
