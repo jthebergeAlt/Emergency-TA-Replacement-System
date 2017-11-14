@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>TA Replacements Web App</title>
+    <title>TA Replacements | Scheduling</title>
 
     <!-- ==========================
      Meta Tags
@@ -14,66 +14,53 @@
     =========================== -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link href="./styles/style.css" rel="stylesheet" type="text/css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="styles/bootstrap-select.min.css" rel="stylesheet" type="text/css">
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
 
     <!-- ==========================
     JS
     =========================== -->
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script async src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
     <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script type="text/javascript" src="http://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
+    <script type="text/javascript" src="scripts/bootstrap-select.min.js"></script>
+
 
   </head>
   <body>
   <div class='container'>
-    <form id='schedule'>
+    <form method='post' action='updateSchedule.php' id='schedule'>
       <div class="card">
         <h4 class="card-header">Availability</h4>
         <div class="card-block">
-          <h4>COEN 122</h4>
-          <br>
-          <div>
-            <label>
-              Mondays 9:15AM-12:00PM (Section #123)
-              <input type='checkbox' name='123'>
-            </label>
-          </div>
-          <div>
-            <label>
-              Tuesdays 9:15AM-12:00PM (Section #234)
-              <input type='checkbox' name='234'>
-            </label>
-          </div>
-          <div>
-            <label>
-              Thursdays 2:15PM-5:00PM (Section #345)
-              <input type='checkbox' name='345'>
-            </label>
-          </div>
-          <hr>
-          <h4>COEN 174</h4>
-          <br>
-          <div>
-            <label>
-              Mondays 9:15AM-12:00PM (Section #456)
-              <input type='checkbox' name='456'>
-            </label>
-          </div>
-          <div>
-            <label>
-              Tuesdays 9:15AM-12:00PM (Section #567)
-              <input type='checkbox' name='567'>
-            </label>
-          </div>
-          <div>
-            <label>
-              Thursdays 2:15PM-5:00PM (Section #678)
-              <input type='checkbox' name='678'
-            </label>
-          </div>
+          <h5>Labs</h5>
+          <select onchange="getUpdatedTimes($(this).val())" class="selectpicker" multiple>
+           <option value="1">Looooooooong</option>
+           <option value="2">2</option>
+           <option value="3">3</option>
+           <option value="4">4</option>
+           <option value="5">5</option>
+           <option value="6">6</option>
+           <option value="7">7</option>
+           <option value="8">8</option>
+         </select>
+         <br>
+         <br>
+         <h5>Times for labs selected</h5>
+         <select disabled class="selectpicker" multiple>
+          <option value="1">Looooooooong</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
           <hr>
           <button class='btn' type='submit'>Save</button>
         </div>
@@ -84,10 +71,13 @@
       <h4 class="card-header">TA List</h4>
       <div class="card-block">
         <ul id='TA_list'>
+
         </ul>
       </div>
     </div>
-    <a style='color: white;' class='btn' href='/'>Sign Out</a>
+    <form method='post' action='logout.php'>
+      <button type='submit' style='color: white;' class='btn'>Sign Out</button>
+    </form>
     <!-- <hr>
     <form>
       <div class="card">
@@ -109,5 +99,26 @@
       });
     </script> -->
   </div>
+  <script>
+    $.get("getTA.php", data => {
+      let obj = JSON.parse(data);
+      let names = '';
+      for (let i = 0; i < obj.length; i++) {
+        var name = (obj[i].first_name + ' ' + obj[i].last_name);
+        if (!names) names = name;
+        else names = names + '\n' + name;
+      }
+      $('#TA_list').text(names).wrap('<pre></pre>');
+    });
+
+    $("#schedule").submit(function(e){
+      $.post()
+      return false;
+    });
+
+    function getUpdatedTimes(selected) {
+      //$.get('getTimes', selected).then()
+    }
+  </script>
 </body>
 </html>

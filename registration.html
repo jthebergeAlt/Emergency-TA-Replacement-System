@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>TA Replacements Web App</title>
+    <title>TA Replacements | Registration</title>
 
     <!-- ==========================
      Meta Tags
@@ -14,7 +14,7 @@
     =========================== -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link href="./styles/style.css" rel="stylesheet" type="text/css">
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
 
     <!-- ==========================
     JS
@@ -27,44 +27,39 @@
     <script type="text/javascript" src="http://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
 
   </head>
-  <body class='container'>
-    <div class="row">
-      <div class="col-md-4">
+  <body>
+    <form method='post' action='register.php' id='createAccount'>
       <div class="card">
-        <h4 class="card-header">Section #123</h4>
+        <h4 class="card-header">Create Account</h4>
         <div class="card-block">
-          <h5>Available</h5>
-          <ul>
-            <li>Joseph Théberge</li>
-          </ul>
-          <hr>
-          <h5>Absences</h5>
-          <ul>
-            <li>Ken Wakaba: 10/31/17</li>
-          </ul>
+          <div>
+          <label>
+            <input type='radio' required name='role' value='professor'> Professor
+          </label>
+          <label>
+            <input type='radio' required name='role' value='TA'> TA
+          </label>
         </div>
-      </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card">
-        <h4 class="card-header">Section #234</h4>
-        <div class="card-block">
-          <ul>
-            <li>Ken Wakaba</li>
-          </ul>
+          <label><div>First Name</div>
+            <input required type="text" name="first_name">
+          </label>
+          <label><div>Last Name</div>
+            <input required type="text" name="last_name">
+          </label>
+          <label><div>Email</div>
+            <input required type="email" name="email">
+          </label>
+          <label><div>Phone Number</div>
+            <input required type="tel" name="phone">
+          </label>
+          <label><div>Password</div>
+         <input required type="password" name="password">
+          </label>
+         <button class='btn' type='submit'>Create account</button>
         </div>
+        <hr style="margin: 0">
+        <a class='link' style="margin: 5px" href='index.html'>Sign in to existing account</a>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card">
-        <h4 class="card-header">Section #345</h4>
-        <div class="card-block">
-          <ul>
-            <li>List Item</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
+    </form>
   </body>
 </html>

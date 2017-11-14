@@ -68,3 +68,11 @@ ul {
     list-style-type: none;
   }
 }
+
+.bootstrap-select.btn-group .dropdown-toggle .filter-option {
+  overflow: auto !important;
+}
+
+.bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+  color: white;
+}
