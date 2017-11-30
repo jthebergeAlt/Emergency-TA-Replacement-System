@@ -1,0 +1,310 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script>
+	  jQuery.ajax({
+    	url: 'verify.php',
+    	success: function(role) {
+      		if (!role) window.location.replace("index.html");
+			else if (role === '"ta"') window.location.replace("scheduling.html");
+    	},
+  	  });
+	</script>
+    <title>TA Coverage | Admin</title>
+
+    <!-- ==========================
+     Meta Tags
+    =========================== -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ==========================
+     CSS
+    =========================== -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/b-1.4.2/b-html5-1.4.2/datatables.min.css">
+	<link href="styles/bootstrap-select.min.css" rel="stylesheet" type="text/css">
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
+
+    <!-- ==========================
+    JS
+    =========================== -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script async src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript" src="scripts/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/pdfmake.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.16/b-1.4.2/b-html5-1.4.2/datatables.min.js"></script>
+
+
+  </head>
+  <body>
+  <div class='container'>
+    <br>
+    <div class='card'>
+      <h4 class="card-header">TA List</h4>
+      <div class="card-block">
+        <ul id='TA_list'>
+
+        </ul>
+      </div>
+    </div>
+    <br>
+      <div class="card">
+        <h4 class="card-header">Search Availabilities</h4>
+        <div class="card-block row">
+          <div class='col-sm-6'>
+            <h5>Classes</h5>
+            <select id='classesAvail' onchange="getUpdatedTimes($(this).val())" class="selectpicker" multiple>
+
+           </select>
+           <br>
+           <br>
+           <h5>Times for labs selected</h5>
+           <select id='times' onchange="getAvailableTAs($(this).val())" class="selectpicker" multiple>
+
+          </select>
+        </div>
+        <div class='col-sm-6'>
+          <h5>Results:</h5>
+			<div class='row'>
+          <div class='col-6' id='resultsNames'></div>
+		  <div class='col-6' id='resultsEmails'></div>
+</div>
+        </div>
+      </div>
+    </div>
+    <br>
+	<div class="card">
+      <h4 class="card-header">Absences</h4>
+      <div class="card-block">
+		<p>Select each row in the table to remove from the list of absences. Then select the button below when complete.</p>
+        <table id="absencesTable" class="table display table-striped table-bordered" cellspacing="0" width="100%">
+		</table>
+		<br>
+		<button class='btn' id='replaceButton'>Remove selected rows from list</button>
+      </div>
+    </div>
+	<br>
+<form id='permissions'>
+    <div class="card">
+      <h4 class="card-header">Give TA Permissions</h4>
+      <div class="card-block">
+        <h5>TAs</h5>
+        <select id='TAs' class="selectpicker" multiple>
+
+       </select>
+       <br>
+       <br>
+       <h5>Class</h5>
+       <select id='classesPerm' class="selectpicker" multiple>
+      </select>
+        <hr>
+        <button class='btn' type='submit'>Save</button>
+      </div>
+    </div>
+	</form>
+	<br>
+<form id='addClass'>
+    <div class="card">
+      <h4 class="card-header">Add Class</h4>
+      <div class="card-block">
+        <h5>Section Name</h5>
+		<input id='addSection_name' type='text' name='section_name'>
+		<br>
+		<br>
+		<h5>Day</h5>
+		<select name='day' class="selectpicker" id='addDay'>
+			<option>M</option>
+			<option>T</option>
+			<option>W</option>
+			<option>TR</option>
+			<option>F</option>
+			<option>S</option>
+		</select>
+		<br>
+		<br>
+		<h5>Time</h5>
+		<select name='time' id='addTime' class="selectpicker" >
+			<option>9:15am-12:00pm</option>
+			<option>2:15pm-5:00pm</option>
+			<option>5:15pm-8:00pm</option>
+		</select>
+	
+       <br>
+       <br>
+        <hr>
+        <button class='btn' type='submit'>Save</button>
+      </div>
+    </div>
+	</form>
+	<br>
+    <form method='post' action='logout.php'>
+      <button type='submit' style='color: white;' class='btn'>Sign Out</button>
+    </form>
+<br>
+  </div>
+  <script>
+
+	
+    function getAvailableTAs(selected) {
+        $.post('getAvailableTAs.php', {classes: JSON.stringify(selected)}, data => {
+          let parsedData = JSON.parse(data);
+          names = '';
+		  emails = '';
+          parsedData.map(obj => {
+            if (names && emails) {
+			 	names = names + '\n' + obj.first_name + ' ' + obj.last_name;
+				emails = emails + '\n' + '<a href="mailto:' + obj.email + '">' + obj.email + '</a>';
+			}
+            else {
+				names = obj.first_name + ' ' + obj.last_name;
+				emails = '<a href="mailto:' + obj.email + '">' + obj.email + '</a>';
+			}
+          });
+          $('#resultsNames').text(names);
+		  $('#resultsEmails').html(emails);
+        });
+    }
+
+    function getUpdatedTimes(selected, callback) { //get updated times on change. callback optional
+  		$('#times option').each((index, option) => {
+  			if (!selected.includes(option.className)) $(option).remove(); //remove all time options that aren't in classes available
+  		});
+
+      $.post('getClassTime.php', {classes:  JSON.stringify(selected)}, data => {
+    		let arr = JSON.parse(data);
+    		arr.map(classTime  => {
+    			if ($('#times option[value="' + classTime.section_name + '_' + classTime.Days + '_' + classTime.Start_t + '_' + classTime.End_t +'"]').length == 0) { //if option doesn't already exist, append
+    				$("#times").append('<option class="' + classTime.section_name + '" value="' + classTime.section_name + '_' + classTime.Days + '_' + classTime.Start_t + '_' + classTime.End_t + '">' + classTime.section_name + ': ' + classTime.Days + ' ' + classTime.Start_t + '-' + classTime.End_t + '</option>');
+    			} //endif
+    		});
+    		$('#times.selectpicker').selectpicker('refresh');
+        getAvailableTAs($('#times').val())
+        if (callback) callback();
+  	  });
+    }
+
+
+$( document ).ready(function() {
+
+	$.get("receiveAbsence.php", absences => {
+		let absencesArr = JSON.parse(absences);
+		let tableData = [];
+		absencesArr.map(obj => {
+			keys = Object.values(obj);
+			tableData.push(keys);
+		});
+			let table = $('#absencesTable').DataTable( {
+				dom: 'Bfrtip',
+				buttons: [
+						'pdfHtml5'
+					],
+				"scrollY": "500px",
+				"paging": false,
+				"data": tableData,
+				"columns": [
+				    { title: "Date" },
+				    { title: "First name" },
+				    { title: "Last name" },
+				    { title: "Email" },
+					{ title: "Course" },
+				    { title: "Day" },
+					{ title: "Start time" },
+				    { title: "End Time" },
+					{ title: "Reason", render: $.fn.dataTable.render.text()}
+				]
+			} );
+
+			$('#absencesTable tbody').on( 'click', 'tr', function () {
+				$(this).toggleClass('selected');
+			} );
+
+			$('#replaceButton').click( function () {
+				let returnArr = [];
+				let rows = table.rows('.selected');
+				rows.data().map(row => {
+					let tempObj = {};
+					tempObj.date = row[0];
+					tempObj.first_name = row[1];
+					tempObj.last_name = row[2];
+					tempObj.email = row[3];
+					tempObj.section_name = row[4];
+					tempObj.day = row[5];
+					tempObj.start_t = row[6];
+					tempObj.end_t = row[7];
+					tempObj.reason = row[8];
+					returnArr.push(tempObj);
+				});
+				rows.remove().draw();
+				$.post('removeAbsence.php', {absences: JSON.stringify(returnArr)});
+			} );
+	});
+
+
+    $.get("getTA.php", data => { //get list of TAs
+      let obj = JSON.parse(data);
+      let names = '';
+      obj.map(TA => {
+        var name = TA.first_name + ' ' + TA.last_name;
+        if (!names) names = name;
+        else names = names + '\n' + name;
+        $('#TAs').append('<option value="' + name + '">' + name + '</option>');
+      });
+      $('#TAs.selectpicker').selectpicker('refresh');
+      $('#TA_list').text(names).wrap('<pre></pre>');
+
+    });
+
+	$.get("getAllSections.php", classes => { //initially get classes through AJAX
+      let classList = JSON.parse(classes);
+
+	     classList.map(classTitle  => {
+		   $("#classesAvail").append('<option value="' + classTitle.section_name + '">' + classTitle.section_name + '</option>');
+           $("#classesPerm").append('<option value="' + classTitle.section_name + '">' + classTitle.section_name + '</option>');
+	     });
+	   $('#classesAvail.selectpicker').selectpicker('refresh');
+       $('#classesPerm.selectpicker').selectpicker('refresh');
+    });
+
+
+
+	$("#permissions").submit(function(e){ //override permissions form submission
+		let TA_list = $("#TAs").val();
+		let classesPerm_List = $("#classesPerm").val();
+		let returnObj = {TAs: JSON.stringify(TA_list), classes: JSON.stringify(classesPerm_List)};
+		$.post("setClasses.php", returnObj, () => {
+			$('#TAs').selectpicker('deselectAll');
+			$('#classesPerm').selectpicker('deselectAll');
+			alert("Permissions added successfully!");
+
+		});
+		return false;
+	});
+
+$("#addClass").submit(function(e){ //override permissions form submission
+		let section = $("#addSection_name");
+		let day = $("#addDay");
+		let time = $("#addTime");
+		let returnObj = {day: day.val(), time: time.val(), section_name: section.val()};
+		$.post("addClass.php", returnObj, () => {
+			alert("Class added successfully!");
+	//		$("#classesAvail").append('<option value="' + returnObj.section_name + '">' + returnObj.section_name + '</option>');
+      //      $("#classesPerm").append('<option value="' + returnObj.section_name + '">' + returnObj.section_name + '</option>');
+	  //   	$('#classesAvail.selectpicker').selectpicker('refresh');
+       //		$('#classesPerm.selectpicker').selectpicker('refresh');
+			time.val('');
+			location.reload();
+		
+		});
+		return false;
+	});
+   });
+  </script>
+</body>
+</html>

@@ -1,18 +1,20 @@
 <?php
 
-define("DBHOST", "dbserver.engr.scu.edu");
-define("DBUSER", "kwakaba");
-define("DBPASS", "00001096003");
-define("DBNAME", "sdb_kwakaba");
+	define("DBHOST", "dbserver.engr.scu.edu");
+	define("DBUSER", "kwakaba");
+	define("DBPASS", "00001096003");
+	define("DBNAME", "sdb_kwakaba");
 
 
 
-function openDB()
-{
-    $database = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME) or die("Error" . mysqli_error($database));
-    return $database;
-}
+	function openDB()
+	{
+		$database = mysqli_connect(DBHOST, DBUSER, DBPASS, DBNAME) or die("Error" . mysqli_error($database));
+		return $database;
+	}
 
+	session_save_path('/webpages/kwakaba/TA_Replacement/sessions');
+	ini_set('session.gc_probability', 1);
     session_start();
 
     $username = "";
@@ -36,5 +38,4 @@ function openDB()
         
     
 
-    //echo json_encode(array("status" => SUCCESS));
 ?>

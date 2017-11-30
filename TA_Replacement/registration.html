@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>TA Coverage | Registration</title>
+
+    <!-- ==========================
+     Meta Tags
+    =========================== -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ==========================
+     CSS
+    =========================== -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
+
+    <!-- ==========================
+    JS
+    =========================== -->
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script async src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript" src="http://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
+
+  </head>
+  <body class='flex'>
+    <form method='post' action='register.php' id='createAccount'>
+      <div class="card">
+        <h4 class="card-header">Create Account</h4>
+        <div class="card-block">
+          <!-- <div>
+          <label>
+            <input type='radio' required name='role' value='professor'> Professor
+          </label>
+          <label>
+            <input type='radio' required name='role' value='TA'> TA
+          </label>
+        </div> -->
+          <label><div>First Name</div>
+            <input required type="text" name="first_name">
+          </label>
+          <label><div>Last Name</div>
+            <input required type="text" name="last_name">
+          </label>
+          <label><div>Email</div>
+            <input required type="email" name="email">
+          </label>
+          <label><div>Password</div>
+         <input required type="password" name="password">
+          </label>
+         <button class='btn' type='submit'>Create account</button>
+        </div>
+        <hr style="margin: 0">
+        <a class='link' style="margin: 5px" href='index.html'>Sign in to existing account</a>
+      </div>
+    </form>
+    <script>
+    $("#createAccount").submit(function(e){ //override schedule form submission
+      var MD5 = new Hashes.MD5;
+      var input = $(this).find("input[name=password]");
+      var PW = input.val();
+      input.val(MD5.hex(PW));
+    });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>TA Coverage | Login</title>
+
+    <!-- ==========================
+     Meta Tags
+    =========================== -->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ==========================
+     CSS
+    =========================== -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link href="styles/style.css" rel="stylesheet" type="text/css">
+
+    <!-- ==========================
+    JS
+    =========================== -->
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script async src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script type="text/javascript" src="http://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
+
+  </head>
+  <body class='flex'>
+    <form id='login'>
+      <div class="card">
+        <h4 class="card-header">Sign In</h4>
+        <div class="card-block">
+          <div id='incorrect'></div>
+          <label><div>Email</div>
+            <input required type="email" name="email">
+          </label>
+          <label><div>Password</div>
+         <input required type="password" name="password">
+          </label>
+         <button class='btn' type='submit'>Sign In</button>
+        </div>
+        <hr style="margin: 0">
+        <a href='registration.html' class='link'>Create account</a>
+      </div>
+    </form>
+    <script>
+      $("#login").submit(function(e){ //override schedule form submission
+        var MD5 = new Hashes.MD5;
+        var sendingData = {};
+        var data = $(this).serializeArray();
+        data.map(obj => {
+          if (obj.name === 'password') obj.value = MD5.hex(obj.value);
+          sendingData[obj.name] = obj.value;
+        });
+        $.post('login.php', {login: JSON.stringify(sendingData)}, response => {
+          var parsedResponse = null;
+          try {parsedResponse = JSON.parse(response);} catch(err) {};
+          switch(parsedResponse) {
+            case 'ta':
+              window.location.replace('scheduling.html');
+              break;
+            case 'admin':
+              console.log('admin case');
+              window.location.replace('admin.html');
+              break;
+            default:
+            $('#incorrect').text('Incorrect email/password');
+          }
+        });
+
+        return false;
+      });
+    </script>
+
+  </body>
+</html>

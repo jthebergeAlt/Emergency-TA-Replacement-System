@@ -1,0 +1,3 @@
+AddType application/php-cgi .php
+Action application/php-cgi /~kwakaba/cgi-bin/php-cgi.cgi
+

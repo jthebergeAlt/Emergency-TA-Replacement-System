@@ -2,8 +2,11 @@ $SCUred: #b30738;
 $SCUdarkred: #97052e;
 
 body {
-  min-height: 100vh;
   background-color: $SCUred;
+}
+
+.flex {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -48,12 +51,13 @@ form#login, form#createAccount {
   }
 }
 
-* {
+body {
   text-align: center;
 }
 
 input {
-  width: 95%;
+  width: 90%;
+  max-width: 350px;
 }
 
 label {
@@ -70,9 +74,62 @@ ul {
 }
 
 .bootstrap-select.btn-group .dropdown-toggle .filter-option {
-  overflow: auto !important;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 5px 0;
 }
 
 .bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:active {
   color: white;
+}
+
+.bootstrap-select.btn-group .dropdown-menu a.dropdown-item span.dropdown-item-inner span.text {
+  margin-right: 15px;
+}
+
+.bootstrap-select:not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+  width: 350px;
+  max-width: 70%;
+}
+
+#currentAvailabilities li:last-of-type {
+  margin-bottom: 15px;
+}
+
+.error {
+  border: 2px solid $SCUred;
+}
+
+.dataTables_scrollBody {
+	height: initial !important;
+	max-height: 500px;
+}
+
+
+table.dataTable tbody tr.selected {
+  background-color: rgba(151, 5, 46, .5);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(179, 7, 56, .1);
+}
+
+#resultsNames, #resultsEmails {
+	text-overflow: ellipsis;
+	white-space: pre;
+	overflow: hidden;
+}
+
+.bootstrap-select.btn-group .dropdown-menu {
+	overflow: initial !important;
+  transform: initial !important;
+  top: 48px !important;
+  will-change: initial !important;
+  .inner {
+    overflow: hidden !important;
+  }
+}
+
+div.dataTables_wrapper div.dataTables_filter label {
+  white-space: initial;
 }
